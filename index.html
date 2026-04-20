@@ -13,16 +13,112 @@
 <body>
     <div class="container col-12 col-lg-6">
         <h1 class="text-center m-5">Login</h1>
-        <form>
+        <form id="loginForm">
             <div class="mx-auto justify-content-center text-center">
-                <label for="email-input" class="form-label m-3">Email Address</label> 
+                <label for="email-input" class="form-label m-3">Email Address</label>
                 <input type="email" class="form-control" id="email-input" placeholder="Email">
-                <label for="password-input" class="form-label m-3">Password</label> 
+                <label for="password-input" class="form-label m-3">Password</label>
                 <input type="password" class="form-control" id="password-input" placeholder="Password">
-                <a class="btn btn-primary m-3 w-25" href="dashboard.html">Login</a>
+                <button type="button" class="btn btn-primary m-3 w-25" id="loginBtn">Login</button>
                 <a class="btn btn-secondary w-25" href="login-error.html">Error</a>
             </div>
         </form>
     </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="validationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Validation Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="errorMessage">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorModal = new bootstrap.Modal(document.getElementById('validationModal'));
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // Email validation: strict format check
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        //8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special
+        function validatePassword(password) {
+            const minLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+            return {
+                valid: minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar,
+                minLength,
+                hasUppercase,
+                hasLowercase,
+                hasNumber,
+                hasSpecialChar
+            };
+        }
+
+        loginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const errors = [];
+            //email logic
+            if (!email) {
+                errors.push('Email is required');
+            } else if (!validateEmail(email)) {
+                errors.push('Email must be in valid format (example@domain.com)');
+            }
+
+            //password logic
+            if (!password) {
+                errors.push('Password is required');
+            } else {
+                const passwordCheck = validatePassword(password);
+                if (!passwordCheck.valid) {
+                    const passwordErrors = [];
+                    if (!passwordCheck.minLength) passwordErrors.push('At least 8 characters');
+                    if (!passwordCheck.hasUppercase) passwordErrors.push('At least 1 uppercase letter');
+                    if (!passwordCheck.hasLowercase) passwordErrors.push('At least 1 lowercase letter');
+                    if (!passwordCheck.hasNumber) passwordErrors.push('At least 1 number');
+                    if (!passwordCheck.hasSpecialChar) passwordErrors.push('At least 1 special character (!@#$%^&*)');
+                    errors.push({type: 'passwordList', items: passwordErrors});
+                }
+            }
+
+            //showing errors in modal
+            if (errors.length > 0) {
+                let html = '';
+                errors.forEach(error => {
+                    if (typeof error === 'string') {
+                        html += '<p>' + error + '</p>';
+                    } else if (error.type === 'passwordList') {
+                        html += '<p>Password must contain:<ul>' +
+                            error.items.map(item => '<li>' + item + '</li>').join('') +
+                            '</ul></p>';
+                    }
+                });
+                errorMessageDiv.innerHTML = html;
+                errorModal.show();
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
 </body>
 </html>
