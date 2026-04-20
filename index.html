@@ -73,6 +73,10 @@
             };
         }
 
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+
         loginBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const email = emailInput.value.trim();
@@ -116,7 +120,8 @@
                 errorMessageDiv.innerHTML = html;
                 errorModal.show();
             } else {
-                window.location.href = 'dashboard.html';
+                const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+                window.location.href = basePath + '/dashboard.html';
             }
         });
     </script>
