@@ -1,0 +1,18 @@
+:root{
+    --bs-primary: #1a56db;
+    --bs-body-bg: #f3f4f6;
+    --bs-secondary: #057a55;
+    
+}
+h1,h2,h3,h4,h5,h6{
+    font-family: 'Poppins', sans-serif;
+}
+p,a,label{
+    font-family: 'Inter', sans-serif;
+}
+.btn-primary{
+    --bs-btn-bg: var(--bs-primary);
+}
+.btn-secondary{
+    --bs-btn-bg: var(--bs-secondary);
+}
